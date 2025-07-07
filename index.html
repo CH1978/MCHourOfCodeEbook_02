@@ -18,14 +18,15 @@
       color: #333;
     }
     img {
-      width: 90vw;        /* 90% 視窗寬 */
-      height: auto;       /* 高度自動調整 */
-      max-height: 80vh;   /* 最大高度 80% 視窗高 */
+      width: 90vw;
+      height: auto;
+      max-height: 80vh;
       object-fit: contain;
       margin-top: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      transition: opacity 0.3s ease;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      cursor: zoom-in;
     }
     .controls {
       margin-top: 20px;
@@ -52,6 +53,27 @@
     .page-number {
       margin-top: 10px;
       font-weight: bold;
+    }
+
+    /* 放大圖片 Lightbox 樣式 */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      cursor: zoom-out;
     }
 
     /* 響應式手機版調整 */
@@ -91,6 +113,11 @@
   </div>
   <div class="page-number" id="pageNumber">第 1 頁 / 共 47 頁</div>
 
+  <!-- 放大圖片的容器 -->
+  <div class="lightbox" id="lightbox">
+    <img id="lightboxImg" src="" alt="放大圖片">
+  </div>
+
   <script>
     const totalPages = 47;
     let currentPage = 1;
@@ -99,13 +126,17 @@
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
     const pageNumber = document.getElementById("pageNumber");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
 
     function updateImage() {
       let num = String(currentPage).padStart(2, '0');
+      const src = `一小時程式設計編碼鎮_1140707_頁面_${num}.jpg`;
       image.style.opacity = 0;
       setTimeout(() => {
-        image.src = `一小時程式設計編碼鎮_1140707_頁面_${num}.jpg`;
+        image.src = src;
         image.alt = `第 ${currentPage} 頁`;
+        lightboxImg.src = src;
         image.style.opacity = 1;
       }, 200);
       pageNumber.textContent = `第 ${currentPage} 頁 / 共 ${totalPages} 頁`;
@@ -125,6 +156,14 @@
         currentPage++;
         updateImage();
       }
+    });
+
+    image.addEventListener("click", () => {
+      lightbox.style.display = "flex";
+    });
+
+    lightbox.addEventListener("click", () => {
+      lightbox.style.display = "none";
     });
 
     // 初始載入
